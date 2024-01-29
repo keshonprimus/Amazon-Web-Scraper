@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Preloading Resources</title>
+    </head>
+    <body>
+        <div id="displayContainer"></div>
+        
+        <form method="post">
+            <button type="button" value= "Send Email" onclick="sendEmail()">Send Email</button>
+        </form>
+
+        <script src="https://smtpjs.com/v3/smtp.js"></script>
+        
+        <script type="module">
+            import { ScrapeAmazon } from './amazon_webscraper.js'
+            
+            const url = 'https://www.amazon.com/Crix-Original-Crackers-Packs-Individually/dp/B0CKWK5797/ref=sr_1_1?crid=2G035BAQNG7RF&keywords=crix&qid=1706038690&rdc=1&sprefix=crix%2Caps%2C260&sr=8-1'
+
+            async function fetchAndDisplay() {
+                
+                // Create a new paragraph element
+                const newParagraph = document.createElement('p');
+        
+                // Set the text content of the paragraph
+                newParagraph.textContent = 'This is a new paragraph.';
+        
+                // Set the ID of the paragraph
+                newParagraph.id = 'dynamicParagraph';
+        
+                // Append the paragraph to the body of the document
+                document.body.appendChild(newParagraph);
+        
+                // Retrieve the element by ID
+                const retrievedElement = document.getElementById('dynamicParagraph');
+        
+                // Display the retrieved element in the HTML
+                const displayContainer = document.getElementById('displayContainer');
+                displayContainer.appendChild(retrievedElement);
+                
+                const {a, b, c, d} = await ScrapeAmazon(url)
+            }
+
+            function sendEmail() {
+                Email.send({
+                    Host : "smtp.elasticemail.com",
+                    Username : "keshonprimus21@hotmail.com",
+                    Password : "A6CC5ACA623C39D5A2F3E91BCEA2CD6F4053",
+                    To : 'keshonprimus4@gmail.com',
+                    From : "keshonprimus21@hotmail.com",
+                    Subject : "This is the subject",
+                    Body : "And this is the body\n" + "\n Thank you"
+                }).then(
+                message => alert(message)
+                );
+            }
+
+            fetchAndDisplay();
+        </script>
+    </body>
+</html>
