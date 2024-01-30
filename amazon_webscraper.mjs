@@ -18,6 +18,6 @@ export async function ScrapeAmazon(url){
 
     await(browser.close())
     
-    return [eltitlerawtxt, elimgvalue, elpricerawtxt, elavailableclean, url]
+    return [eltitlerawtxt, elimgvalue, url]
 }
 
