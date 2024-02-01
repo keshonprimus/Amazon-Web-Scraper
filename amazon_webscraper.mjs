@@ -19,18 +19,18 @@ export async function ScrapeAmazon(url){
 
     //Element price
     const [elprice] = await page.$x('//*[@id="tp_price_block_total_price_ww"]/span[1]')
-    const elpricetxt = await elprice.getProperty('textContent')
-    const elpricerawtxt = await elpricetxt.jsonValue();
+    const elpriceraw = await elprice.getProperty('textContent')
+    const elpricejson = await elpriceraw.jsonValue()
+    const elpricevalue = elpricejson.slice(1)
+    const elpricefloat = parseFloat(elpricevalue)
 
-    // Elment availability
+    // Element availability
     const [elavailable] = await page.$x('//*[@id="availability"]')
     const elavailabletxt = await elavailable.getProperty('textContent')
     const elavailablerawtxt = await elavailabletxt.jsonValue();
     const elavailableclean = elavailablerawtxt.trim();
 
-
     await(browser.close())
     
-    return [eltitlerawtxt, elimgvalue, elavailableclean, elpricerawtxt, url]
+    return [eltitlerawtxt, elimgvalue, elpricefloat, elavailableclean, url]
 }
-
