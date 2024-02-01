@@ -47,7 +47,7 @@ function sendStockMessage(title, img, price, availability, url){
 }
 
 function sendPriceMessage(title, img, price, availability, url){
-
+    console.log(initialPrice)
     if (price != initialPrice){
         var percentChange = ( ( price-initialPrice ) / initialPrice ) *100
         if ( percentChange > 20 ) {
@@ -82,7 +82,9 @@ function sendPriceMessage(title, img, price, availability, url){
             html: htmlContent,
         };
     }
-    return null;
+    else {
+        return null;
+    }
 
 }
 
@@ -93,6 +95,7 @@ async function sendEmail(url) {
     try {
         var [ title, img, price, availability, buyUrl ] = await ScrapeAmazon(url);
         
+        // TODO: restructure if statement logic so that sendStockMessage and sendPriceMessage are only called once
         if (sendStockMessage(title, img, price, availability, buyUrl) != null || sendPriceMessage(title, img, price, availability, buyUrl) != null){
             
             const transporter = nodemailer.createTransport({
@@ -124,9 +127,7 @@ async function sendEmail(url) {
     } catch (error) {
         console.error('Internal Error:', error);
     }
-    
 
 }
-
 
 sendEmail(amazonUrl)
