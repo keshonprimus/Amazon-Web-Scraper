@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer'
 
+
 // Scrape Amazon Webpage
 export async function ScrapeAmazon(url){    
     const browser = await puppeteer.launch()
