@@ -4,10 +4,10 @@ import { ScrapeAmazon } from './amazon_webscraper.mjs'
 
 var amazonUrl = ''
 
-var { initTitle, initImg, initPrice, initAvailbility } = [ ' ', ' ', 1, ' ' ]
+var { initPrice, initAvailbility } = [ 1, ' ' ]
 
 
-function sendStockMessage(availability){
+function sendStockMessage(title, img, price, availability, url){
     if (availability != initAvailbility) {
         if (availability == 'In Stock') {
             const htmlContent = `
@@ -43,7 +43,7 @@ function sendStockMessage(availability){
     return null;
 }
 
-function sendPriceMessage(price){
+function sendPriceMessage(title, img, price, availability, url){
     if (price != initPrice){
         percentChange = ( ( price-initPrice ) / initPrice ) *100
         if ( percentChange > 20 ) {
@@ -75,9 +75,36 @@ function sendPriceMessage(price){
             html: htmlContent,
         };
     }
+    return null;
 
 }
 
 
+async function sendEmail() {
 
+    try {
+        var { title, img, price, availability, buyUrl } = await ScrapeAmazon(url);
+
+        const transporter = nodemailer.createTransport({
+            host: "smtp.elasticemail.com",
+            port: 2525,
+            secure: false,
+            auth: {
+                user: "keshonprimus21@hotmail.com",
+                pass: "A6CC5ACA623C39D5A2F3E91BCEA2CD6F4053"
+            }
+        });
+        if (sendStockMessage(title, img, price, availability, buyUrl) != null){
+            const info = await transporter.sendMail(sendStockMessage(title, img, price, availability, buyUrl));
+            console.log("Email sent: " + info.response);
+        }
+        else if (sendPriceMessage(title, img, price, availability, buyUrl) != null){
+            const info = await transporter.sendMail(sendPriceMessage(title, img, price, availability, buyUrl));
+            console.log("Email sent: " + info.response);
+        }
+
+    } catch (error) {
+        console.error('Internal Error:', error);
+    }
+}
 
