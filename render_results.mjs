@@ -16,7 +16,7 @@ function sendStockMessage(title, img, price, availability, url){
             htmlContent = `
                 <h2>Your favorite Amazon product is back in stock!</h2>
                 <p>Product: ${title}</p>
-                <p>Price: ${price}</p>
+                <p>Price: $${price.toFixed(2)}</p>
                 <p>Availability: ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
@@ -28,7 +28,7 @@ function sendStockMessage(title, img, price, availability, url){
             htmlContent = `
                 <h2>Your favorite Amazon product is low in stock!</h2>
                 <p>Product: ${title}</p>
-                <p>Price: ${price}</p>
+                <p>Price: $${price.toFixed(2)}</p>
                 <p>Availability: ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
@@ -47,14 +47,14 @@ function sendStockMessage(title, img, price, availability, url){
 }
 
 function sendPriceMessage(title, img, price, availability, url){
-    console.log(initialPrice)
+
     if (price != initialPrice){
         var percentChange = ( ( price-initialPrice ) / initialPrice ) *100
         if ( percentChange > 20 ) {
             htmlContent = `
                 <h2>Your favorite Amazon product just went up in price!</h2>
                 <p>Product: ${title}</p>
-                <p>New Price: ${price} (was ${initialPrice})</p>
+                <p>New Price: $${price.toFixed(2)} (was $${initialPrice.toFixed(2)})</p>
                 <p>Availability: ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
@@ -66,7 +66,7 @@ function sendPriceMessage(title, img, price, availability, url){
             htmlContent = `
                 <h2>Your favorite Amazon product just dropped in price!</h2>
                 <p>Product: ${title}</p>
-                <p>New Price: ${price} (was ${initialPrice})</p>
+                <p>New Price: $${price.toFixed(2)} (was $${initialPrice.toFixed(2)})</p>
                 <p>Availability: ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
@@ -89,14 +89,15 @@ function sendPriceMessage(title, img, price, availability, url){
 }
 
 
-
 async function sendEmail(url) {
-
-    try {
+    
+    try {    
         var [ title, img, price, availability, buyUrl ] = await ScrapeAmazon(url);
-        
-        // TODO: restructure if statement logic so that sendStockMessage and sendPriceMessage are only called once
-        if (sendStockMessage(title, img, price, availability, buyUrl) != null || sendPriceMessage(title, img, price, availability, buyUrl) != null){
+
+        var stockMessage = sendStockMessage(title, img, price, availability, buyUrl)
+        var priceMessage = sendPriceMessage(title, img, price, availability, buyUrl)
+    
+        if (stockMessage!= null || priceMessage != null){
             
             const transporter = nodemailer.createTransport({
                 host: "smtp.elasticemail.com",
@@ -108,13 +109,13 @@ async function sendEmail(url) {
                 }
             });
 
-            if (sendStockMessage(title, img, price, availability, buyUrl) != null) {
-                const info = await transporter.sendMail(sendStockMessage(title, img, price, availability, buyUrl));
+            if (stockMessage != null) {
+                const info = await transporter.sendMail(stockMessage);
                 console.log("Email sent: " + info.response);  
             }
             
-            if (sendPriceMessage(title, img, price, availability, buyUrl) != null){
-                const info = await transporter.sendMail(sendPriceMessage(title, img, price, availability, buyUrl));
+            if (priceMessage != null){
+                const info = await transporter.sendMail(priceMessage);
                 console.log("Email sent: " + info.response);  
             }
 
