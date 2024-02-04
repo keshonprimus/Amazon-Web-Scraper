@@ -2,8 +2,6 @@ import nodemailer from 'nodemailer'
 import { ScrapeAmazon } from './amazon_webscraper.mjs'
 
 
-var amazonUrl = 'https://www.amazon.com/Crix-Original-Crackers-Packs-Individually/dp/B0CKWK5797/ref=sr_1_1?crid=2G035BAQNG7RF&keywords=crix&qid=1706038690&rdc=1&sprefix=crix%2Caps%2C260&sr=8-1'
-
 let initialPrice = 1
 let initialAvailability = 'In Stock'
 var htmlContent = ``
@@ -89,7 +87,7 @@ function sendPriceMessage(title, img, price, availability, url){
 }
 
 
-async function sendEmail(url) {
+export async function sendEmail(url) {
     
     try {    
         var [ title, img, price, availability, buyUrl ] = await ScrapeAmazon(url);
@@ -130,5 +128,3 @@ async function sendEmail(url) {
     }
 
 }
-
-sendEmail(amazonUrl)
