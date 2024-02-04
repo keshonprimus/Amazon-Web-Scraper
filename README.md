@@ -10,6 +10,19 @@ BEFORE YOU RUN:
 
     2. In schedule_scrape, set the desired timezone configurations for logging. Default configurations set to EN-US, timezone: New York.
 
+    3. Set the configuration for the message transporter settings. Create an account at elastic email or an email service scheduler if needed. 
+        See https://app.elasticemail.com/api/create-account to use elastic email.
+        Use login credentials for the transporter configurations. 
+            ` const transporter = nodemailer.createTransport({
+                    host: "smtp.elasticemail.com",
+                    port: 2525,
+                    secure: false,
+                    auth: {
+                        user: "<your_username>",
+                        pass: "<your_password>"
+                    }
+                }); `
+
 
 TO RUN: ` node --experimental-modules schedule_scrape.mjs <your_target_url> `
 
