@@ -106,8 +106,8 @@ export async function sendEmail(url) {
                 port: 2525,
                 secure: false,
                 auth: {
-                    user: "keshonprimus21@hotmail.com",
-                    pass: "A6CC5ACA623C39D5A2F3E91BCEA2CD6F4053"
+                    user: "<user-defined>",
+                    pass: "<user-defined>"
                 }
             });
 
