@@ -7,30 +7,32 @@ let initialAvailability = 'In Stock'
 var htmlContent = ``
 
 
-function sendStockMessage(title, img, price, availability, url){
+function sendStockMessage(title, img, price, availability, delivery, url){
 
     if (availability != initialAvailability) {
         if (availability == 'In Stock') {
             htmlContent = `
-                <h2>Your favorite Amazon product is back in stock!</h2>
-                <p>Product: ${title}</p>
-                <p>Price: $${price.toFixed(2)}</p>
-                <p>Availability: ${availability}</p>
+                <h2>Your tracked product is back in stock!</h2>
+                <h4>${title}</h4>
+                <p><strong>Price:</strong> $${price.toFixed(2)}</p>
+                <p><strong>Availability:</strong> ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
-                <p> <a href="${url}" style="text-align: center;">BUY NOW</a></p>
+                <p><strong>Earliest <u>FREE</u> Delivery:</strong> ${delivery}</p>
+                <p><a href="${url}" style="text-align: center;"><strong>BUY NOW</strong></a></p>
             </div>`
             initialAvailability = availability
         }
         else {
             htmlContent = `
-                <h2>Your favorite Amazon product is low in stock!</h2>
-                <p>Product: ${title}</p>
-                <p>Price: $${price.toFixed(2)}</p>
-                <p>Availability: ${availability}</p>
+                <h2>Your tracked product is low in stock!</h2>
+                <h4>${title}</h4>
+                <p><strong>Price:</strong> $${price.toFixed(2)}</p>
+                <p><strong>Availability:</strong> ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
-                <p> <a href="${url}" style="text-align: center;">BUY NOW</a></p>
+                <p><strong>Earliest <u>FREE</u> Delivery:</strong> ${delivery}</p>
+                <p><a href="${url}" style="text-align: center;"><strong>BUY NOW</strong></a></p>
             </div>`
             initialAvailability = availability
         }
@@ -44,31 +46,33 @@ function sendStockMessage(title, img, price, availability, url){
     return null;
 }
 
-function sendPriceMessage(title, img, price, availability, url){
+function sendPriceMessage(title, img, price, availability, delivery, url){
 
     if (price != initialPrice){
         var percentChange = ( ( price-initialPrice ) / initialPrice ) *100
         if ( percentChange > 20 ) {
             htmlContent = `
-                <h2>Your favorite Amazon product just went up in price!</h2>
-                <p>Product: ${title}</p>
-                <p>New Price: $${price.toFixed(2)} (was $${initialPrice.toFixed(2)})</p>
-                <p>Availability: ${availability}</p>
+                <h2>Your tracked product just went up in price!</h2>
+                <h4>${title}</h4>
+                <p><strong>New Price:</strong> $${price.toFixed(2)} (was <strike>$${initialPrice.toFixed(2)}</strike>)</p>
+                <p><strong>Availability:</strong> ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
-                <p> <a href="${url}" style="text-align: center;">BUY NOW</a></p>
+                <p><strong>Earliest <u>FREE</u> Delivery:</strong> ${delivery}</p>
+                <p><a href="${url}" style="text-align: center;"><strong>BUY NOW</strong></a></p>
             </div>`
             initialPrice = price
         }
         else if ( percentChange < 20 ) {
             htmlContent = `
-                <h2>Your favorite Amazon product just dropped in price!</h2>
-                <p>Product: ${title}</p>
-                <p>New Price: $${price.toFixed(2)} (was $${initialPrice.toFixed(2)})</p>
-                <p>Availability: ${availability}</p>
+                <h2>Your tracked product just dropped in price!</h2>
+                <h4${title}</h4>
+                <p><strong>New Price:</strong> $${price.toFixed(2)} (was <strike>$${initialPrice.toFixed(2)}</strike>)</p>
+                <p><strong>Availability:</strong> ${availability}</p>
                 <div style="text-align: center;">
                 <img src="${img}" alt="Product Image" style="width: 50%;">
-                <p> <a href="${url}" style="text-align: center;">BUY NOW</a></p>
+                <p><strong>Earliest <u>FREE</u> Delivery:</strong> ${delivery}</p>
+                <p><a href="${url}" style="text-align: center;"><strong>BUY NOW</strong></a></p>
             </div>`
             initialPrice = price
         }
@@ -90,10 +94,10 @@ function sendPriceMessage(title, img, price, availability, url){
 export async function sendEmail(url) {
     
     try {    
-        var [ title, img, price, availability, buyUrl ] = await ScrapeAmazon(url);
+        var [ title, img, price, availability, delivery, buyUrl ] = await ScrapeAmazon(url);
 
-        var stockMessage = sendStockMessage(title, img, price, availability, buyUrl)
-        var priceMessage = sendPriceMessage(title, img, price, availability, buyUrl)
+        var stockMessage = sendStockMessage(title, img, price, availability, delivery, buyUrl)
+        var priceMessage = sendPriceMessage(title, img, price, availability, delivery, buyUrl)
     
         if (stockMessage!= null || priceMessage != null){
             
@@ -107,13 +111,13 @@ export async function sendEmail(url) {
                 }
             });
 
+            if (priceMessage != null){
+                            const info = await transporter.sendMail(priceMessage);
+                            console.log("Email sent: " + info.response);  
+                        }
+
             if (stockMessage != null) {
                 const info = await transporter.sendMail(stockMessage);
-                console.log("Email sent: " + info.response);  
-            }
-            
-            if (priceMessage != null){
-                const info = await transporter.sendMail(priceMessage);
                 console.log("Email sent: " + info.response);  
             }
 
