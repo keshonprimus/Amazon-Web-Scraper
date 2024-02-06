@@ -1,7 +1,7 @@
 import schedule from 'node-schedule';
 import { sendEmail } from './render_results.mjs';
 
-
+// Timezone configuration for logging of scheduler-executed tasks 
 const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/New_York',
     year: 'numeric',
@@ -15,6 +15,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
 
 let task; 
 
+// instantiation and execution of webscraping task
 task = schedule.scheduleJob('* * /23 * *' , function(){
     const urlArgument = process.argv[2];
     const estFormattedString = formatter.format(new Date());
