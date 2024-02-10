@@ -1,4 +1,4 @@
-This project will invoke a simple webscraper for a particular Amazon product. It is designed to launch a browser and conduct a webscrape for an amazon product, prodvided the url. The scrape will be automated to be conducted every 12 hours and relay any change in the availibility of the product via email notifications.
+This project will invoke a simple webscraper for a particular Amazon product. It is designed to launch a browser and conduct a webscrape for an Amazon product, prodvided the url. The scrape will be automated to be conducted every 23 hours and relay any change in the availibility of the product via email notifications.
 
 BEFORE YOU RUN: 
 

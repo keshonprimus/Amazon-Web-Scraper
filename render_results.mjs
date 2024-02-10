@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import { ScrapeAmazon } from './amazon_webscraper.mjs'
 
-// Initialization of initial pricing and stock count
+// Initialization of pricing and stock count
 let initialPrice = 1
 let initialAvailability = 'In Stock'
 var htmlContent = ``
@@ -9,8 +9,10 @@ var htmlContent = ``
 // sendStockMessage generates the message about the product stock changes
 function sendStockMessage(title, img, price, availability, delivery, url){
 
-    // if chancg in stock count occurs
+    // if change in stock count occurs
     if (availability != initialAvailability) {
+        
+        // if the item is restocked
         if (availability == 'In Stock') {
             htmlContent = `
                 <h2>Your tracked product is back in stock!</h2>
@@ -24,6 +26,7 @@ function sendStockMessage(title, img, price, availability, delivery, url){
             </div>`
             initialAvailability = availability
         }
+        // if item is low in stock
         else {
             htmlContent = `
                 <h2>Your tracked product is low in stock!</h2>
@@ -37,6 +40,7 @@ function sendStockMessage(title, img, price, availability, delivery, url){
             </div>`
             initialAvailability = availability
         }
+        // return full configuration for message transporter
         return {
             from: "keshonprimus21@hotmail.com",
             to: 'keshonprimus4@gmail.com',
@@ -84,6 +88,7 @@ function sendPriceMessage(title, img, price, availability, delivery, url){
             initialPrice = price
         }
         
+        // return full configuration for message transporter
         return {
             from: "keshonprimus21@hotmail.com",
             to: 'keshonprimus4@gmail.com',
@@ -94,7 +99,6 @@ function sendPriceMessage(title, img, price, availability, delivery, url){
     else {
         return null;
     }
-
 }
 
 //  sendEmail generates the email body and configuration and sends the email to recipient via transponder protocol 
@@ -107,9 +111,11 @@ export async function sendEmail(url) {
         // price-change and stock-change validation
         var stockMessage = sendStockMessage(title, img, price, availability, delivery, buyUrl)
         var priceMessage = sendPriceMessage(title, img, price, availability, delivery, buyUrl)
-    
+        
+        // if price-change or stock-change occurs 
         if (stockMessage!= null || priceMessage != null){
             
+            // generate message transporter via nodemailer 
             const transporter = nodemailer.createTransport({
                 host: "smtp.elasticemail.com",
                 port: 2525,
@@ -129,17 +135,13 @@ export async function sendEmail(url) {
                 const info = await transporter.sendMail(stockMessage);
                 console.log("Email sent: " + info.response);  
             }
-
         }
-
         // if no change in product attribute was detected and relayed
         else {
             console.log("No notification needed")
         }
-
     // failure to fetch web results
     } catch (error) {
         console.error('Internal Error:', error);
     }
-
 }
